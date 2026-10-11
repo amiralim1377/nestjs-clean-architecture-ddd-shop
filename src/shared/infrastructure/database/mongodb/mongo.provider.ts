@@ -8,7 +8,7 @@ export const MongoProvider = {
   inject: [ConfigService],
 
   useFactory: async (configService: ConfigService): Promise<Db> => {
-    const url = configService.getOrThrow<string>('MONGO_URL');
+    const url = configService.getOrThrow<string>('MONGODB_URL');
     const dbName = configService.getOrThrow<string>(
       'MONGO_DB_NAME',
       'clean_shop',
