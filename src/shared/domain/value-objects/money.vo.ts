@@ -22,7 +22,7 @@ export class Money {
     return this.currency;
   }
 
-  getCents(): number {
+  toCents(): number {
     return Math.round(this.amount * 100);
   }
 }
