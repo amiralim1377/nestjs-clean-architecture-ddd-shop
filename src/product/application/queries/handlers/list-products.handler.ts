@@ -2,10 +2,8 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ListProductsQuery } from '../list-products.query.js';
 import { Product } from '../../../domain/entities/product.entity.js';
 import { Inject } from '@nestjs/common';
-import {
-  PRODUCT_REPOSITORY,
-  ProductRepository,
-} from '../../port/product.repository.port.js';
+import { PRODUCT_REPOSITORY } from '../../port/product.repository.port.js';
+import type { ProductRepository } from '../../port/product.repository.port.js';
 
 @QueryHandler(ListProductsQuery)
 export class ListProductsHandler implements IQueryHandler<
