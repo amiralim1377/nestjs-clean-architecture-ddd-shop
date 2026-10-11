@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongodbModule } from './shared/infrastructure/database/mongodb/mongodb.module.js';
 import { DrizzleModule } from './shared/infrastructure/database/postgres/drizzle.module.js';
-import { ProductController } from './product/presentation/product.controller.js';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ProductsController } from './product/presentation/product.controller.js';
+import { ProductModule } from './product/product.module.js';
 
 @Module({
   imports: [
@@ -13,8 +14,9 @@ import { CqrsModule } from '@nestjs/cqrs';
     }),
     MongodbModule,
     DrizzleModule,
+    ProductModule,
   ],
-  controllers: [ProductController],
+  controllers: [ProductsController],
   providers: [],
 })
 export class AppModule {}
