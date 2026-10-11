@@ -3,10 +3,12 @@ import { ProductsController } from './presentation/product.controller.js';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PRODUCT_REPOSITORY } from './application/port/product.repository.port.js';
 import { DrizzleProductRepository } from './infrastructure/adapters/drizzle-product.repository.js';
+import { CommandHandler } from './application/index.js';
 
 @Module({
   imports: [CqrsModule],
   providers: [
+    ...CommandHandler,
     {
       provide: PRODUCT_REPOSITORY,
       useClass: DrizzleProductRepository,
