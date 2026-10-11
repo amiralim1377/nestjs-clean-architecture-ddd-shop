@@ -3,12 +3,15 @@ import {
   DRIZZLE,
   type DrizzleDB,
 } from '../../../shared/infrastructure/database/postgres/drizzle.provider.js';
-import { ProductRepository } from '../../application/port/product.repository.port.js';
+import {
+  ProductFilters,
+  ProductRepository,
+} from '../../application/port/product.repository.port.js';
 import { Sku } from '../../domain/value-objects/sku.vo.js';
 import { ProductId } from '../../domain/value-objects/product-id.vo.js';
 import { Product } from '../../domain/entities/product.entity.js';
 import { products } from '../../../shared/infrastructure/database/postgres/schema/products.schema.js';
-import { eq } from 'drizzle-orm';
+import { and, eq, gte, lte, SQL } from 'drizzle-orm';
 import { Money } from '../../../shared/domain/value-objects/money.vo.js';
 
 @Injectable()
@@ -103,5 +106,34 @@ export class DrizzleProductRepository implements ProductRepository {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     });
+  }
+
+  async findAll(filters: ProductFilters): Promise<Product[]> {
+    const conditions: SQL[] = [];
+
+    if (filters?.isActive !== undefined) {
+      conditions.push(eq(products.isActive, filters.isActive));
+    }
+
+    if (filters?.minPrice !== undefined) {
+      conditions.push(
+        gte(products.priceAmount, Math.round(filters.minPrice * 100)),
+      );
+    }
+
+    if (filters?.maxPrice !== undefined) {
+      conditions.push(
+        lte(products.priceAmount, Math.round(filters.maxPrice * 100)),
+      );
+    }
+
+    const query = this.db.select().from(products);
+
+    const productRows =
+      conditions.length > 0
+        ? await query.where(and(...conditions))
+        : await query;
+
+    return productRows.map((row) => DrizzleProductRepository.toDomain(row));
   }
 }
