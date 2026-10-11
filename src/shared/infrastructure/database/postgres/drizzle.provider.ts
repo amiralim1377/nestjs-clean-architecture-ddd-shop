@@ -19,7 +19,7 @@ export const DrizzleProvider = {
 
     const client = postgres(connectionString);
 
-    const db = drizzle(client, { schema });
+    const db = drizzle(client, { schema: schema });
 
     await db.execute(sql`SELECT 1`);
 
