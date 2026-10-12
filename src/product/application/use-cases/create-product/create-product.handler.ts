@@ -1,11 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConflictException, Inject } from '@nestjs/common';
-
 import { CreateProductCommand } from './create-product.command.js';
 import { PRODUCT_REPOSITORY } from '../../port/product.repository.port.js';
 import type { ProductRepository } from '../../port/product.repository.port.js';
 import { Sku } from '../../../domain/value-objects/sku.vo.js';
 import { Product } from '../../../domain/entities/product.entity.js';
+import {
+  ApplicationException,
+  ApplicationExceptionCode,
+} from '../../../../shared/domain/exeotions/application.exception.js';
 
 @CommandHandler(CreateProductCommand)
 export class CreateProductHandler implements ICommandHandler<
@@ -23,8 +26,9 @@ export class CreateProductHandler implements ICommandHandler<
     const existingBySku = await this.productRepository.findBySku(sku);
 
     if (existingBySku) {
-      throw new ConflictException(
+      throw new ApplicationException(
         `Product with SKU ${command.sku} already exists`,
+        ApplicationExceptionCode.CONFLICT,
       );
     }
 
@@ -33,8 +37,9 @@ export class CreateProductHandler implements ICommandHandler<
     );
 
     if (existingByName) {
-      throw new ConflictException(
-        `Product with name ${command.name} already exists`,
+      throw new ApplicationException(
+        `Product with SKU ${command.sku} already exists`,
+        ApplicationExceptionCode.CONFLICT,
       );
     }
 
