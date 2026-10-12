@@ -1,4 +1,5 @@
 import { AggregateRoot } from '../../../shared/domain/aggregate-root.js';
+import { CustomerRegisteredEvent } from '../../events/customer-registered.event.js';
 import { CustomerId } from '../value-object/customer-id.vo.js';
 import { Email } from '../value-object/email.vo.js';
 
@@ -55,9 +56,9 @@ export class Customer extends AggregateRoot {
       updatedAt: now,
     });
 
-    // customer.apply(
-    //   new CustomerRegisteredEvent(id.getValue(), email.getValue(), firstName),
-    // );
+    customer.apply(
+      new CustomerRegisteredEvent(id.getValue(), email.getValue(), firstName),
+    );
 
     return customer;
   }
