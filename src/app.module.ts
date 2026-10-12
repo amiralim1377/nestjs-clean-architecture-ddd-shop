@@ -5,6 +5,7 @@ import { DrizzleModule } from './shared/infrastructure/database/postgres/drizzle
 import { CqrsModule } from '@nestjs/cqrs';
 import { ProductsController } from './product/presentation/product.controller.js';
 import { ProductModule } from './product/product.module.js';
+import { CustomersModule } from './customers/customers.module.js';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ProductModule } from './product/product.module.js';
     MongodbModule,
     DrizzleModule,
     ProductModule,
+    CustomersModule,
   ],
   controllers: [ProductsController],
   providers: [],
