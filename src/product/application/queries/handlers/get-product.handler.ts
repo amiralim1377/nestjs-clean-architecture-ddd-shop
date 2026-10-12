@@ -10,6 +10,10 @@ import {
 } from '../../port/product.repository.port.js';
 
 import { ProductId } from '../../../domain/value-objects/product-id.vo.js';
+import {
+  ApplicationException,
+  ApplicationExceptionCode,
+} from '../../../../shared/domain/exceptions/application.exception.js';
 
 @QueryHandler(GetProductQuery)
 export class GetProductHandler implements IQueryHandler<
@@ -27,7 +31,10 @@ export class GetProductHandler implements IQueryHandler<
     );
 
     if (!product) {
-      throw new NotFoundException(`Product with ID ${query.id} was not found`);
+      throw new ApplicationException(
+        `Product with ID ${query.id} was not found`,
+        ApplicationExceptionCode.NOT_FOUND,
+      );
     }
 
     return product;
