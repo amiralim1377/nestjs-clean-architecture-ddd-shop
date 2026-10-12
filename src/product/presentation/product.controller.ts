@@ -15,6 +15,7 @@ import { ProductResponseDto } from './dtos/product-response.dto.js';
 import { Product } from '../domain/entities/product.entity.js';
 import { ListProductsQuery } from '../application/queries/list-products.query.js';
 import { GetProductQuery } from '../application/queries/get-product.query.js';
+import { DeleteProductCommand } from '../application/use-cases/delete-product/delete-product.command.js';
 
 @Controller('products')
 export class ProductsController {
@@ -62,5 +63,12 @@ export class ProductsController {
     );
 
     return ProductResponseDto.fromDomain(product);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.commandBus.execute<DeleteProductCommand, void>(
+      new DeleteProductCommand(id),
+    );
   }
 }
