@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CUSTOMER_REPOSITORY } from './application/port/customer.repository.port.js';
 import { DrizzleCustomerRepository } from './infrastructure/adapters/drizzle-customer.repository.js';
+import { CustomersController } from './customers.controller.js';
 
 @Module({
-  controllers: [],
+  controllers: [CustomersController],
   providers: [
     {
       provide: CUSTOMER_REPOSITORY,
