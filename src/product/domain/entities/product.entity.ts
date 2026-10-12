@@ -1,5 +1,5 @@
 import { AggregateRoot } from '../../../shared/domain/aggregate-root.js';
-import { DomainException } from '../../../shared/domain/exeotions/domain.exception.js';
+import { DomainException } from '../../../shared/domain/exceptions/domain.exception.js';
 import { Money } from '../../../shared/domain/value-objects/money.vo.js';
 import { ProductId } from '../value-objects/product-id.vo.js';
 import { Sku } from '../value-objects/sku.vo.js';

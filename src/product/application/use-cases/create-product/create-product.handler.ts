@@ -8,7 +8,7 @@ import { Product } from '../../../domain/entities/product.entity.js';
 import {
   ApplicationException,
   ApplicationExceptionCode,
-} from '../../../../shared/domain/exeotions/application.exception.js';
+} from '../../../../shared/domain/exceptions/application.exception.js';
 
 @CommandHandler(CreateProductCommand)
 export class CreateProductHandler implements ICommandHandler<

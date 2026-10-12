@@ -1,4 +1,4 @@
-import { DomainException } from '../exeotions/domain.exception.js';
+import { DomainException } from '../exceptions/domain.exception.js';
 
 export class Money {
   private constructor(
