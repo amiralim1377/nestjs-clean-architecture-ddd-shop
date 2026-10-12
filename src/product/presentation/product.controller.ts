@@ -38,6 +38,13 @@ export class ProductsController {
     );
   }
 
+  @Delete(':id')
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.commandBus.execute<DeleteProductCommand, void>(
+      new DeleteProductCommand(id),
+    );
+  }
+
   @Get()
   async findAll(
     @Query('isActive') isActive?: string,
@@ -63,12 +70,5 @@ export class ProductsController {
     );
 
     return ProductResponseDto.fromDomain(product);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.commandBus.execute<DeleteProductCommand, void>(
-      new DeleteProductCommand(id),
-    );
   }
 }
