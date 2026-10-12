@@ -38,7 +38,7 @@ export class CreateProductHandler implements ICommandHandler<
 
     if (existingByName) {
       throw new ApplicationException(
-        `Product with SKU ${command.sku} already exists`,
+        `Product with name ${command.name} already exists`,
         ApplicationExceptionCode.CONFLICT,
       );
     }
