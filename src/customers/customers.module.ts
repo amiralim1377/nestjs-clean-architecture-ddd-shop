@@ -5,8 +5,8 @@ import { CustomerController } from './customers.controller.js';
 import { CommandHandlers } from './application/use-case/index.js';
 import { QueryHandlers } from './application/queries/handlers/index.js';
 import { NOTIFICATION_SERVICE } from './application/port/notification.port.js';
-import { ConsoleNotificationAdapter } from './infrastructure/adapters/console-notification.adapter.js';
 import { EventHandlers } from './events/index.js';
+import { NodemailerEmailAdapter } from './infrastructure/adapters/nodemailer-notification.adapter.js';
 
 @Module({
   controllers: [CustomerController],
@@ -20,7 +20,7 @@ import { EventHandlers } from './events/index.js';
     },
     {
       provide: NOTIFICATION_SERVICE,
-      useClass: ConsoleNotificationAdapter,
+      useClass: NodemailerEmailAdapter,
     },
   ],
   exports: [CUSTOMER_REPOSITORY],
