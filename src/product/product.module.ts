@@ -30,5 +30,6 @@ import { MongoProductRepository } from './infrastructure/adapters/mongo-product.
     },
   ],
   controllers: [ProductsController],
+  exports: [PRODUCT_REPOSITORY],
 })
 export class ProductModule {}
