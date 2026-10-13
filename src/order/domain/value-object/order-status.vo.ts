@@ -4,6 +4,7 @@ export type OrderStatusValue =
   'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
 
 export class OrderStatus {
+  // State Machine
   private static readonly VALID_TRANSITIONS: Record<
     OrderStatusValue,
     OrderStatusValue[]
