@@ -13,13 +13,13 @@ import { PlaceOrderDto } from './dtos/place-order.dto.js';
 import { OrderResponseDto } from './dtos/order-response.dto.js';
 import { ShipOrderDto } from './dtos/ship-order.dto.js';
 import { PlaceOrderCommand } from '../application/use-cases/place-order/place-order.command.js';
-import { ConfirmOrderCommand } from '../application/use-cases/confirm-order/confirm-order.handler.js';
 import { ShipOrderCommand } from '../application/use-cases/ship-order/ship-order.handler.js';
 import { DeliverOrderCommand } from '../application/use-cases/deliver-order/deliver-order.command.js';
 import { CancelOrderCommand } from '../application/use-cases/cancel-order/cancel-order.handler.js';
 import { ListOrdersQuery } from '../application/queries/list-orders.query.js';
 import { Order } from '../domain/entity/order.entity.js';
 import { GetOrderQuery } from '../application/queries/get-order.query.js';
+import { ConfirmOrderCommand } from '../application/use-cases/confirm-order/confirm-order.command.js';
 
 @Controller('orders')
 export class OrderController {
