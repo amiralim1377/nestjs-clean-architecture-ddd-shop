@@ -15,6 +15,13 @@
       "when": 1791816119357,
       "tag": "0001_tan_nebula",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791889915974,
+      "tag": "0002_remarkable_sprite",
+      "breakpoints": true
     }
   ]
 }
