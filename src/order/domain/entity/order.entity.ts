@@ -1,7 +1,11 @@
 import { AggregateRoot } from '../../../shared/domain/aggregate-root.js';
 import { DomainException } from '../../../shared/domain/exceptions/domain.exception.js';
 import { Money } from '../../../shared/domain/value-objects/money.vo.js';
+import { OrderCancelledEvent } from '../events/order-cancelled.event.js';
+import { OrderConfirmedEvent } from '../events/order-confirmed.event.js';
+import { OrderDeliveredEvent } from '../events/order-delivered.event.js';
 import { OrderPlacedEvent } from '../events/order-placed.event.js';
+import { OrderShippedEvent } from '../events/order-shipped.event.js';
 import { OrderId } from '../value-object/order-id.vo.js';
 import { OrderStatus } from '../value-object/order-status.vo.js';
 import { ShippingAddress } from '../value-object/shipping-address.vo.js';
@@ -133,6 +137,16 @@ export class Order extends AggregateRoot {
   confirm(): void {
     this._status = this._status.confirm();
     this._updatedAt = new Date();
+
+    this.apply(
+      new OrderConfirmedEvent(this._id.getValue(), this._customerId, {
+        street: this._shippingAddress.street,
+        city: this._shippingAddress.city,
+        state: this._shippingAddress.state,
+        zipCode: this._shippingAddress.zipCode,
+        country: this._shippingAddress.country,
+      }),
+    );
   }
 
   ship(trackingNumber: string): void {
@@ -143,11 +157,21 @@ export class Order extends AggregateRoot {
     this._status = this._status.ship();
     this._trackingNumber = trackingNumber.trim();
     this._updatedAt = new Date();
+
+    this.apply(
+      new OrderShippedEvent(
+        this._id.getValue(),
+        this._trackingNumber,
+        this._customerId,
+      ),
+    );
   }
 
   deliver() {
     this._status = this._status.deliver();
     this._updatedAt = new Date();
+
+    this.apply(new OrderDeliveredEvent(this._id.getValue(), this._customerId));
   }
 
   cancel(reason: string) {
@@ -157,5 +181,7 @@ export class Order extends AggregateRoot {
 
     this._status = this._status.cancel();
     this._updatedAt = new Date();
+
+    this.apply(new OrderCancelledEvent(this._id.getValue(), this._customerId));
   }
 }
