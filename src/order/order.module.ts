@@ -9,9 +9,11 @@ import { PRODUCT } from './application/port/product.port.js';
 import { ProductAdapter } from './infrastructure/adapters/product.adapter.js';
 import { QueryHandlers } from './application/queries/handlers/index.js';
 import { EventHandlers } from './application/events/index.js';
+import { ProductModule } from '../product/product.module.js';
+import { CustomersModule } from '../customers/customers.module.js';
 
 @Module({
-  imports: [],
+  imports: [CustomersModule, ProductModule],
   providers: [
     ...CommandHandlers,
     ...QueryHandlers,
@@ -30,5 +32,6 @@ import { EventHandlers } from './application/events/index.js';
     },
   ],
   controllers: [OrderController],
+  exports: [ORDER_REPOSITORY],
 })
 export class OrderModule {}
