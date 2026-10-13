@@ -1,3 +1,5 @@
+import { DomainException } from '../../../shared/domain/exceptions/domain.exception.js';
+
 interface ShippingAddressProps {
   street: string;
   city: string;
@@ -23,23 +25,23 @@ export class ShippingAddress {
 
   static create(props: ShippingAddressProps): ShippingAddress {
     if (!props.street || props.street.trim().length === 0) {
-      throw new Error('Shipping address street is required');
+      throw new DomainException('Shipping address street is required');
     }
 
     if (!props.city || props.city.trim().length === 0) {
-      throw new Error('Shipping address city is required');
+      throw new DomainException('Shipping address city is required');
     }
 
     if (!props.state || props.state.trim().length === 0) {
-      throw new Error('Shipping address state is required');
+      throw new DomainException('Shipping address state is required');
     }
 
     if (!props.zipCode || props.zipCode.trim().length === 0) {
-      throw new Error('Shipping address zip code is required');
+      throw new DomainException('Shipping address zip code is required');
     }
 
     if (!props.country || props.country.trim().length !== 2) {
-      throw new Error(
+      throw new DomainException(
         'Shipping address country must be a valid 2-letter ISO code',
       );
     }
