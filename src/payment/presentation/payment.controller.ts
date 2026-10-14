@@ -1,4 +1,12 @@
-import { Body, Controller, Inject, Logger, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  Inject,
+  Logger,
+  Post,
+  RawBody,
+} from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import {
   PAYMENT_GATEWAY,
@@ -6,6 +14,7 @@ import {
 } from '../port/payment-gateway.port.js';
 import { CreatePaymentDto } from './dtos/create-payment.dto.js';
 import { CreatePaymentCommand } from '../application/use-cases/create-payment/create-payment.command.js';
+import { ConfirmPaymentCommand } from '../application/use-cases/confirm-payment/confirm-payment.command.js';
 
 @Controller('payments')
 export class PaymentController {
@@ -22,5 +31,34 @@ export class PaymentController {
     return this.commandBus.execute(
       new CreatePaymentCommand(dto.orderId, dto.successUrl, dto.cancelUrl),
     );
+  }
+
+  @Post('webhook')
+  async handleWebhook(
+    @RawBody() payload: Buffer,
+    @Headers('stripe-signature') signature: string,
+  ) {
+    const event = this.paymentGateway.constructWebhookEvent(payload, signature);
+    this.logger.log('Got stripe webhook event', event);
+
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        const paymentId = session.metadata?.paymentId;
+        const gatewayTransactionId =
+          typeof session.payment_intent === 'string'
+            ? session.payment_intent
+            : session.payment_intent?.id;
+
+        if (paymentId && gatewayTransactionId) {
+          await this.commandBus.execute(
+            new ConfirmPaymentCommand(paymentId, gatewayTransactionId),
+          );
+        }
+        break;
+      }
+      default:
+        break;
+    }
   }
 }
