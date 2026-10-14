@@ -1,0 +1,115 @@
+import { AggregateRoot } from '@nestjs/cqrs';
+import { PaymentId } from '../value-object/payment-id.vo.js';
+import { Money } from '../../../shared/domain/value-objects/money.vo.js';
+import { PaymentStatus } from '../value-object/payment-status.vo.js';
+import { DomainException } from '../../../shared/domain/exceptions/domain.exception.js';
+import { PaymentCompletedEvent } from '../../events/payment-completed.event.js';
+
+export interface PaymentProps {
+  id: PaymentId;
+  orderId: string;
+  amount: Money;
+  status: PaymentStatus;
+  gatewayTransactionId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export class Payment extends AggregateRoot {
+  private _id: PaymentId;
+  private _orderId: string;
+  private _amount: Money;
+  private _status: PaymentStatus;
+  private _gatewayTransactionId: string | null;
+  private _createdAt: Date;
+  private _updatedAt: Date;
+
+  private constructor(props: PaymentProps) {
+    super();
+    this._id = props.id;
+    this._orderId = props.orderId;
+    this._amount = props.amount;
+    this._status = props.status;
+    this._gatewayTransactionId = props.gatewayTransactionId;
+    this._createdAt = props.createdAt;
+    this._updatedAt = props.updatedAt;
+  }
+
+  static initiate(orderId: string, amount: Money): Payment {
+    if (amount.getAmount() <= 0) {
+      throw new DomainException('Payment amount must be greater than 0');
+    }
+
+    const now = new Date();
+
+    return new Payment({
+      id: new PaymentId(),
+      orderId,
+      amount,
+      status: PaymentStatus.pending(),
+      gatewayTransactionId: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  complete(gatewayTransactionId: string) {
+    this._gatewayTransactionId = gatewayTransactionId;
+    this._status = this._status.transitionToSucceeded();
+    this._updatedAt = new Date();
+
+    this.apply(
+      new PaymentCompletedEvent(
+        this._id.getValue(),
+        this._orderId,
+        gatewayTransactionId,
+      ),
+    );
+  }
+
+  static reconstitute(props: PaymentProps): Payment {
+    return new Payment(props);
+  }
+
+  startCheckout() {
+    if (this.isSucceeded()) {
+      throw new DomainException(
+        `Cannot start checkout for a payment in ${this._status.getValue()} status`,
+      );
+    }
+    this._status = PaymentStatus.processing();
+    this._updatedAt = new Date();
+  }
+
+  isSucceeded(): boolean {
+    return this._status.isSucceeded();
+  }
+
+  get id(): PaymentId {
+    return this._id;
+  }
+
+  get orderId(): string {
+    return this._orderId;
+  }
+
+  get amount(): Money {
+    return this._amount;
+  }
+
+  get status(): PaymentStatus {
+    return this._status;
+  }
+
+  get gatewayTransactionId(): string | null {
+    return this._gatewayTransactionId;
+  }
+
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
+}
