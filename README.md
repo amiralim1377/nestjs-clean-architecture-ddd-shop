@@ -1,124 +1,363 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+<div align="center">
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 🛍️ Clean Shop
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### A modular e-commerce backend built with NestJS
 
-## Description
+**Domain-Driven Design · Hexagonal Architecture · CQRS · Stripe Checkout**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[![NestJS](https://img.shields.io/badge/NestJS-12-ea2845?logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169e1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle-ORM-c5f74f?logo=drizzle&logoColor=111)](https://orm.drizzle.team/)
+[![Stripe](https://img.shields.io/badge/Stripe-Test%20Payments-635bff?logo=stripe&logoColor=white)](https://stripe.com/)
+[![License](https://img.shields.io/badge/License-Unlicensed-lightgrey)]
 
-## Project setup
+_A learning-focused e-commerce backend exploring clean boundaries, domain logic, and payment workflows._
 
-```bash
-$ pnpm install
+</div>
+
+---
+
+## ✨ What is Clean Shop?
+
+Clean Shop is an e-commerce backend built with **NestJS and TypeScript**. Its codebase is organized around business capabilities—customers, products, orders, and payments—with a focus on keeping business rules independent from frameworks and external services.
+
+The project combines **Domain-Driven Design (DDD)**, **Hexagonal Architecture (Ports and Adapters)**, and **CQRS**. It also includes a Stripe Checkout integration and a local webhook workflow for development.
+
+> 🚧 **Project status:** This project is under active development. Review the current controllers, DTOs, configuration, and payment flow before using it in production.
+
+## 🧭 At a glance
+
+| Area                        | Current approach                              |
+| --------------------------- | --------------------------------------------- |
+| Backend                     | NestJS + TypeScript                           |
+| Architecture                | Modular Monolith, DDD, Hexagonal Architecture |
+| Application flow            | CQRS with `@nestjs/cqrs`                      |
+| Relational database         | PostgreSQL                                    |
+| Database toolkit            | Drizzle ORM + `postgres` driver               |
+| Additional database adapter | MongoDB driver (product adapter exists)       |
+| Payments                    | Stripe Checkout                               |
+| Email                       | Nodemailer / SMTP                             |
+| Validation                  | `class-validator` + `class-transformer`       |
+| Testing                     | Vitest, NestJS Testing, Supertest             |
+| Package manager             | pnpm                                          |
+
+**Intentionally not included right now:** RabbitMQ, Kafka, Redis, and BullMQ are not listed in the current `package.json`. The application can use its in-process CQRS events without introducing a separate message broker. Add external messaging only when a clear requirement calls for it.
+
+## 🧩 Features
+
+- **Customer management** — register, list, retrieve, and delete customers.
+- **Product management** — create, list, retrieve, and delete products.
+- **Order lifecycle** — place, retrieve, confirm, ship, deliver, and cancel orders.
+- **Payment workflow** — create a Stripe Checkout Session through a payment gateway abstraction.
+- **Payment webhook foundation** — forward Stripe events to the local NestJS app during development.
+- **Domain modeling** — entities, value objects, domain events, and shared domain primitives.
+- **Ports and adapters** — abstract repositories, order pricing, payment providers, and notifications behind contracts.
+- **CQRS** — keep commands that change state separate from queries that read data.
+- **Email notifications** — send messages through Nodemailer, with a console adapter available for development.
+
+## 🏛️ Architecture
+
+The project is structured as a **Modular Monolith**: each business area lives in its own module, while the application can still be deployed as one service.
+
+```mermaid
+flowchart TB
+    Client[HTTP Client] --> Presentation[Controllers & DTOs]
+    Presentation --> Application[Application Layer\nCommands, Queries & Handlers]
+    Application --> Domain[Domain Layer\nEntities, Value Objects & Rules]
+    Application --> Ports[Ports / Interfaces]
+    Ports -. implemented by .-> Infrastructure[Infrastructure Adapters]
+    Infrastructure --> PostgreSQL[(PostgreSQL)]
+    Infrastructure --> MongoDB[(MongoDB, optional)]
+    Infrastructure --> Stripe[Stripe API]
+    Infrastructure --> SMTP[SMTP / Nodemailer]
 ```
 
-## Compile and run the project
+### The layers
 
-```bash
-# development
-$ pnpm run start
+| Layer              | Responsibility                                                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Domain**         | Business rules, entities, value objects, and domain events. Keep this layer independent from NestJS, Drizzle, and Stripe where practical. |
+| **Application**    | Use cases, command/query handlers, orchestration, and the ports required by the application.                                              |
+| **Infrastructure** | Concrete implementations such as Drizzle repositories, Stripe integration, order-pricing adapters, and email adapters.                    |
+| **Presentation**   | HTTP controllers and DTOs that define and validate API input.                                                                             |
+| **Shared**         | Small, genuinely shared building blocks such as `Money`, `UniqueId`, base entities, and exception types.                                  |
 
-# watch mode
-$ pnpm run start:dev
+### CQRS in this project
 
-# production mode
-$ pnpm run start:prod
+- A **Command** represents an operation that changes state, such as `PlaceOrderCommand` or `CreatePaymentCommand`.
+- A **Query** reads data, such as `GetOrderQuery` or `ListProductsQuery`.
+- A **Domain Event** records something meaningful that happened, such as `OrderPlaced` or `PaymentCompleted`.
+- An **Event Handler** reacts to an event—for example, by sending a notification.
+
+CQRS does **not** require RabbitMQ or Kafka. The NestJS CQRS EventBus is in-process by default; it does not automatically provide durable message storage, cross-service delivery, or retry guarantees.
+
+### Repository layout
+
+```text
+src/
+├── customers/
+│   ├── application/       # Ports, use cases, queries and handlers
+│   ├── domain/            # Customer entity and value objects
+│   ├── events/            # Customer domain event and handler
+│   ├── infrastructure/    # Drizzle repository and notification adapters
+│   ├── presentation/      # DTOs
+│   ├── customers.controller.ts
+│   └── customers.module.ts
+├── product/
+│   ├── application/       # Product commands, queries and repository port
+│   ├── domain/            # Product entity and value objects
+│   ├── infrastructure/    # Drizzle and MongoDB adapters
+│   ├── presentation/
+│   └── product.module.ts
+├── order/
+│   ├── application/       # Order use cases, queries, ports and event handlers
+│   ├── domain/            # Order entities, statuses and domain events
+│   ├── infrastructure/    # Order repository and customer/product adapters
+│   ├── presentation/
+│   └── order.module.ts
+├── payment/
+│   ├── application/       # Create/confirm payment use cases and ports
+│   ├── domain/            # Payment entity and status value object
+│   ├── events/            # Payment-related domain events
+│   ├── infrastructure/    # Drizzle, order pricing and Stripe adapters
+│   ├── port/              # Payment gateway contract
+│   ├── presentation/      # Payment controller and DTOs
+│   └── payment.module.ts
+├── shared/
+│   ├── domain/            # Entity, AggregateRoot, Money and exceptions
+│   └── infrastructure/    # Database providers and exception filters
+├── app.module.ts
+└── main.ts
 ```
 
-## Run tests
+## ⚙️ Getting started
+
+### Requirements
+
+- Node.js compatible with the project (development has been run with Node.js 24)
+- pnpm
+- PostgreSQL for the relational persistence path
+- MongoDB only if you enable the MongoDB adapter
+- A Stripe account in **Test mode** to exercise the real Checkout integration
+- Stripe CLI for local webhook forwarding (optional)
+- An SMTP sandbox such as Mailtrap for testing email delivery (optional)
+
+### 1. Install dependencies
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm install
 ```
 
-## Deployment
+### 2. Configure environment variables
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Create a local `.env` file in the repository root. Do **not** commit it.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```dotenv
+# Database selection
+DATABASE=postgres
+POSTGRES_DATABASE_URL=postgres://postgres:postgres@localhost:15432/clean_shop
+
+# Optional MongoDB adapter
+MONGODB_URL=mongodb://localhost:27017
+MONGODB_DB_NAME=clean_shop
+
+# SMTP / Mailtrap
+SMTP_HOST=sandbox.smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_USER=replace_with_mailtrap_username
+SMTP_PASSWORD=replace_with_mailtrap_password
+SMTP_FROM="Clean Shop <no-reply@example.com>"
+
+# Optional application setting
+ADMIN_USER_ID=00000000-0000-4000-8000-000000000000
+
+# Stripe Test mode — use your own local values
+STRIPE_SECRET_KEY=sk_test_replace_me
+STRIPE_SUCCESS_URL=http://localhost:3000
+STRIPE_WEBHOOK_SECRET=whsec_replace_me
+```
+
+All values above are examples, not working credentials. Update the variables to match your local configuration and the code in your current branch. If you do not use MongoDB or SMTP during development, those settings may not be needed by your selected application path.
+
+**Important:** `POSTGRES_DATABASE_URL` used by the application and the connection configured in `drizzle.config.ts` should point to the same database. Otherwise, a migration can succeed in one database while the NestJS application connects to another.
+
+### 3. Prepare PostgreSQL and run migrations
+
+Make sure PostgreSQL is running and the `clean_shop` database exists. Review `drizzle.config.ts`, especially its `schema`, `out`, and database URL settings.
+
+Generate a migration after changing Drizzle schema definitions:
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm exec drizzle-kit generate
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project:
+Apply generated migrations:
 
 ```bash
-$ pnpm install @nestjs/observe
+pnpm exec drizzle-kit migrate
 ```
 
-Then follow the [setup guide](https://docs.nestjs.com/observability/overview) - it takes a single import and an app key.
+> `migrate` applies migration files that already exist. It does not automatically turn a new TypeScript schema definition into a migration—that is the job of `generate`.
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+If an expected table is missing, verify the active database, schema path, migration output directory, and Drizzle migration journal before manually changing migration history.
 
-## Resources
+### 4. Start the API
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+pnpm start:dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+The examples in this README assume the API is available at `http://localhost:3000`. Adjust URLs if your app uses a different port or a global route prefix.
 
-## Support
+## 🔌 API overview
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+The routes below are based on the route registrations observed during development. Check the relevant controller and DTO for exact request bodies, response shapes, authentication requirements, and status codes.
 
-## Stay in touch
+### Products
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Method   | Endpoint        | Purpose            |
+| -------- | --------------- | ------------------ |
+| `POST`   | `/products`     | Create a product   |
+| `GET`    | `/products`     | List products      |
+| `GET`    | `/products/:id` | Retrieve a product |
+| `DELETE` | `/products/:id` | Delete a product   |
 
-## License
+### Customers
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Method   | Endpoint         | Purpose             |
+| -------- | ---------------- | ------------------- |
+| `POST`   | `/customers`     | Register a customer |
+| `GET`    | `/customers`     | List customers      |
+| `GET`    | `/customers/:id` | Retrieve a customer |
+| `DELETE` | `/customers/:id` | Delete a customer   |
+
+### Orders
+
+| Method  | Endpoint              | Purpose                    |
+| ------- | --------------------- | -------------------------- |
+| `POST`  | `/orders`             | Place an order             |
+| `GET`   | `/orders`             | List orders                |
+| `GET`   | `/orders/:id`         | Retrieve an order          |
+| `PATCH` | `/orders/:id/confirm` | Confirm an order           |
+| `PATCH` | `/orders/:id/ship`    | Mark an order as shipped   |
+| `PATCH` | `/orders/:id/deliver` | Mark an order as delivered |
+| `PATCH` | `/orders/:id/cancel`  | Cancel an order            |
+
+### Payments
+
+| Method | Endpoint            | Purpose                                                                                          |
+| ------ | ------------------- | ------------------------------------------------------------------------------------------------ |
+| `POST` | `/payments`         | Request a payment / Checkout Session (verify against the current controller)                     |
+| `POST` | `/payments/webhook` | Local webhook forwarding target used in development; ensure the matching route exists in the app |
+
+## 💳 Stripe Checkout & webhooks
+
+### Create a Checkout Session
+
+The payment use case is handled by `CreatePaymentHandler`. It relies on:
+
+- `PaymentRepository` to find and persist payment state;
+- `OrderPricingPort` to obtain server-side order pricing;
+- `PaymentGatewayPort` to abstract the payment provider;
+- `StripePaymentAdapter` as the current provider adapter.
+
+The application should calculate prices from trusted server-side order data, not from an amount supplied by the client. A production payment flow also needs a clear policy for concurrent requests, repeated Checkout Session creation, expired sessions, and failures between Stripe and PostgreSQL.
+
+### Forward Stripe events to localhost
+
+You can run Stripe CLI without installing it globally by using `pnpm dlx`.
+
+Authenticate the CLI once:
+
+```bash
+pnpm dlx @stripe/cli login
+```
+
+Start a listener in a separate terminal:
+
+```bash
+pnpm dlx @stripe/cli listen \
+  --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed \
+  --forward-to http://localhost:3000/payments/webhook
+```
+
+The CLI prints a webhook signing secret beginning with `whsec_`. Put that value in your **local** `.env` as `STRIPE_WEBHOOK_SECRET`. The listener secret is separate from `STRIPE_SECRET_KEY`; it may change when the listener is recreated, so update your local configuration accordingly.
+
+Start the NestJS app in another terminal and trigger a sample event in a third terminal:
+
+```bash
+pnpm dlx @stripe/cli trigger checkout.session.completed
+```
+
+A triggered sample event may not contain the order or payment IDs used by your application. Use it to verify forwarding and signature validation, then test the full business workflow with data appropriate for the application.
+
+### Webhook safety checklist
+
+- Validate the Stripe signature using the raw request body and the `stripe-signature` header.
+- With NestJS and Express, enable raw body capture if needed, for example with `NestFactory.create(AppModule, { rawBody: true })`.
+- Do not treat a redirect to the success URL as proof that a payment succeeded.
+- Expect webhook deliveries to be retried; make processing idempotent and track provider event IDs.
+- Keep payment status changes consistent with domain rules and database state.
+- Never expose Stripe secret keys or webhook signing secrets in source control, client-side code, or logs.
+
+## 🧪 Tests & code quality
+
+The project currently defines these scripts in `package.json`:
+
+```bash
+pnpm test          # Run tests with Vitest
+pnpm test:watch    # Watch mode
+pnpm test:cov      # Test coverage
+pnpm test:e2e      # End-to-end tests
+pnpm lint          # Oxlint
+pnpm format        # Format TypeScript source and test files
+pnpm build         # Build the NestJS application
+```
+
+Use unit tests for domain rules and use cases, integration tests for persistence adapters, and end-to-end tests for critical order and payment flows. Tests involving Stripe should use test credentials or a fake adapter—not live payment credentials.
+
+## 🧱 Engineering principles
+
+- **Depend on abstractions:** application handlers depend on ports, not directly on Drizzle, Stripe, or Nodemailer.
+- **Keep domain rules in the domain:** state transitions belong in domain methods rather than arbitrary database updates.
+- **Keep module boundaries meaningful:** avoid importing another module's database schema directly when a port or explicit contract is more appropriate.
+- **Make payment processing resilient:** account for concurrent requests, duplicate events, provider idempotency, and reconciliation after partial failures.
+- **Add infrastructure with a purpose:** RabbitMQ, Kafka, Redis, BullMQ, and microservices are not prerequisites for DDD, Hexagonal Architecture, or CQRS.
+- **Prefer consistency in naming:** the current tree contains naming variations such as `use-case`/`use-cases` and `entity`/`entities`; standardize these gradually as the code evolves.
+
+## 🔐 Security notes
+
+- Keep `.env` out of version control. Commit only safe placeholders in an optional `.env.example`.
+- Rotate any Stripe key or SMTP credential that has been exposed in a public place, chat, screenshot, or repository history.
+- Use a Stripe **Secret key** only on the server; a **Publishable key** belongs in client-side Stripe.js integrations.
+- Use a webhook signing secret (`whsec_...`) only to validate webhook signatures on the server.
+- Before production, review authentication, authorization, rate limiting, request validation, TLS, logging, database backups, and migration strategy.
+- Never log raw credentials, secrets, or sensitive payment data.
+
+## 📜 Package scripts
+
+| Command            | Description                           |
+| ------------------ | ------------------------------------- |
+| `pnpm start`       | Start NestJS                          |
+| `pnpm start:dev`   | Start in watch mode                   |
+| `pnpm start:debug` | Start with debugging and watch mode   |
+| `pnpm start:prod`  | Run the compiled app from `dist/main` |
+| `pnpm build`       | Build the app                         |
+| `pnpm test`        | Run tests                             |
+| `pnpm test:watch`  | Run tests in watch mode               |
+| `pnpm test:cov`    | Run tests with coverage               |
+| `pnpm test:e2e`    | Run end-to-end tests                  |
+| `pnpm lint`        | Check source and tests with Oxlint    |
+| `pnpm format`      | Format TypeScript files with Prettier |
+
+---
+
+<div align="center">
+
+**Built to learn, designed to evolve.** 🚀
+
+<sub>Clean Shop is an actively evolving project. Always verify the implementation and configuration in the current branch before relying on this documentation.</sub>
+
+</div>
