@@ -7,6 +7,7 @@ import { ProductsController } from './product/presentation/product.controller.js
 import { ProductModule } from './product/product.module.js';
 import { CustomersModule } from './customers/customers.module.js';
 import { OrderModule } from './order/order.module.js';
+import { PaymentModule } from './payment/payment.module.js';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { OrderModule } from './order/order.module.js';
     ProductModule,
     CustomersModule,
     OrderModule,
+    PaymentModule,
   ],
   controllers: [ProductsController],
   providers: [],
